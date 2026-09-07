@@ -58,6 +58,11 @@ Decisions made before implementation, with the alternatives considered and the c
 - Raw-HTTP integration remains possible today for any language (documented JSON, server rejects with reasons per FR-2.3) — the integrator just takes on their own span bookkeeping.
 - In v1 the distinction is theoretical: the only producer that exists is our own TS demo app.
 
+**Not a contradiction with the v1.2 cut — two different jobs:**
+- Checking **one event at a time** (right fields, right types) is cheap. The server does this for every sender, always. Being "open to any client" only means this door is open.
+- Making sense of a **whole stream of events** from someone else's app (events arriving in the wrong order, spans with missing parents, sessions that never end, other frameworks naming things differently) is the expensive part. That is what we cut to v1.2.
+- Rule of thumb: **v1 checks events; the sender keeps their stream in order. v1.2 is when we start fixing other people's streams for them.** If a broken stream arrives anyway, the graph degrades gracefully instead of crashing (FR-3.6) — it does not get repaired.
+
 ---
 
 ## DD-5: One contract definition; duplicated enforcement, never duplicated definitions
@@ -98,6 +103,17 @@ packages/contract  ← the ONE definition (Zod)
 **Decision:** The demo app implements its own small agent loop (delegation, tool dispatch — ~100 lines) rather than using any SDK's higher-level agent abstractions.
 
 **Why:** the SDKs are used as dumb model clients behind the `LlmClient` port, which is what makes DD-6 cheap; a hand-rolled loop gives clean, unambiguous instrumentation points for the emitter; and the loop's simplicity keeps the demo's delegation shape stable for reliable demo runs.
+
+---
+
+## DD-8: Store facts (tokens), derive dollars at read time
+
+**Decision:** Events store token counts and the model ID — never a dollar amount. Cost is computed when the graph is read, using a runtime-loaded JSON price file (path set by env var, mounted via docker-compose, editable without a rebuild).
+
+**Why, in simple terms:**
+- Token counts are **facts** — they came from the provider and never change. Prices are **opinions that change** — new models ship, prices move. Storing a computed dollar amount freezes today's opinion into the record; deriving it at read time means updating the price file automatically re-prices every past session correctly.
+- Senders can put any model ID in an event, including ones we've never heard of. An unknown model shows cost as "unknown" (tokens still shown, rollups marked partial) instead of crashing or guessing (FR-3.3.1) — same posture as broken streams (FR-3.6).
+- A runtime-editable **file** covers the MVP need (add a line when a model ships). An API/UI to edit prices is deferred to the roadmap — it's an endpoint, validation, and screen the 3-day budget doesn't have, for the same outcome this week.
 
 ---
 

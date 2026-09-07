@@ -16,9 +16,11 @@
 ### FR-3 Graph reconstruction
 - FR-3.1 `GET /sessions` lists sessions (id, started_at, status, total cost/tokens, root agent name).
 - FR-3.2 `GET /sessions/:id/graph` returns the conversation DAG: nodes (agent invocations, tool calls, LLM calls) and edges (parent/child, delegation), each node annotated with latency, tokens, and cost.
-- FR-3.3 Cost is computed from a static price table (per-model input/output token prices) checked into the repo.
+- FR-3.3 Cost is computed at **read time** from stored token counts — dollar amounts are never stored (see DD-8). Prices come from a JSON price file (per-model input/output token prices), keyed by model ID. The file path is set by env var and the file is read at runtime (mounted via docker-compose), so prices can be changed without a rebuild — and because cost is derived on read, a price change automatically re-prices past sessions too.
+- FR-3.3.1 An unknown model ID must never break anything: its cost shows as "unknown" in the API and UI, token counts still display, and rollups mark totals as partial. No guessing, no crash (same spirit as FR-3.6). Editing prices through an API/UI is roadmap, not MVP.
 - FR-3.4 Cost/token totals are rolled up per subtree and per session.
 - FR-3.5 Reconstruction is a parent-pointer walk; the API also returns the flat, time-ordered event list for the session (drives the event-list panel).
+- FR-3.6 Bad streams must not break the graph. The server checks each event on its own (shape and fields), but it does not fix broken sequences — that is the sender's job. If a sequence is broken anyway, reconstruction degrades gracefully instead of crashing: an event whose parent never arrived is shown under a synthetic "unattached" node, and a session with no finish event just shows as "running". Nothing more — no buffering, no reordering, no guessing (that is v1.2, see the roadmap).
 
 ### FR-4 UI
 - FR-4.1 Session list page: sessions with status and totals; clicking opens the session view.
