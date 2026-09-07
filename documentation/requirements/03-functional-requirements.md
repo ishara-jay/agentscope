@@ -28,14 +28,15 @@
 - FR-4.5 Ordered event list shown alongside the graph; selecting an event highlights its node.
 
 ### FR-5 Demo application
-- FR-5.1 A runnable multi-agent demo: orchestrator delegates to researcher and writer agents; researcher uses 2–3 tools; built on the google-genai SDK.
-- FR-5.2 Fully instrumented with the emitter helper.
+- FR-5.1 A runnable multi-agent demo: orchestrator delegates to researcher and writer agents; researcher uses 2–3 tools; a hand-rolled agent loop (no agent-framework abstractions — see DD-7).
+- FR-5.2 Fully instrumented with the emitter helper, wrapped at the `LlmClient` boundary.
 - FR-5.3 Triggerable from the UI ("run demo task" button) or CLI.
+- FR-5.4 Model access goes only through a minimal `LlmClient` port (`generate(messages, tools) → {text?, toolCalls?, usage}`); provider selected via `LLM_PROVIDER` env var. MVP ships one adapter: google-genai / Gemini (free-tier key). See DD-6.
 
 ## Non-functional requirements
 
 - NFR-1 **One-command boot**: `docker compose up` starts Postgres, backend, frontend, and demo-agent runner.
-- NFR-2 **Contract-first**: event schema and graph API response shape are frozen on Day 1 morning and captured as `fixture.json` (one complete fake session) so frontend and backend develop in parallel.
+- NFR-2 **Contract-first**: event schema and graph API response shape are frozen on Day 1 morning and captured as `fixture.json` (one complete fake session) so frontend and backend develop in parallel. Each shape is defined once as a Zod schema in a shared contract package; emitter types are inferred from it, the server runs the single authoritative runtime validation against it, and CI validates `fixture.json` against it (see DD-5).
 - NFR-3 **Readability over generality**: this is a reference implementation; prefer the simple obvious design and document trade-offs in the README design-decisions section.
 - NFR-4 Demo session scale: graphs up to ~50 nodes render smoothly; no pagination or virtualization needed in v1.
 - NFR-5 Secrets: the google-genai API key comes from env only; never stored or logged; a `.env.example` is provided.
