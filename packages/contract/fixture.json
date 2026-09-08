@@ -1,0 +1,186 @@
+{
+  "events": [
+    {
+      "event_id": "00000000-0000-4000-8000-000000000001",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-orch",
+      "parent_span_id": null,
+      "timestamp": "2026-09-08T09:00:00.000Z",
+      "type": "agent_started",
+      "payload": {
+        "agent_name": "orchestrator",
+        "input": "Research the current state of agent observability and write a short summary."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000002",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-llm-plan",
+      "parent_span_id": "sp-orch",
+      "timestamp": "2026-09-08T09:00:01.500Z",
+      "type": "llm_called",
+      "payload": {
+        "model": "fake-model",
+        "provider": "fake",
+        "input_tokens": 812,
+        "output_tokens": 156,
+        "duration_ms": 1420,
+        "prompt": "You are an orchestrator. Break this task into research and writing steps: Research the current state of agent observability and write a short summary.",
+        "response": "Plan: 1) researcher gathers sources on agent observability. 2) writer produces a summary from the findings."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000003",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-orch",
+      "parent_span_id": null,
+      "timestamp": "2026-09-08T09:00:01.600Z",
+      "type": "delegated",
+      "payload": {
+        "child_agent_name": "researcher",
+        "task": "Gather 2-3 key facts about the current state of agent observability."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000004",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-res",
+      "parent_span_id": "sp-orch",
+      "timestamp": "2026-09-08T09:00:01.650Z",
+      "type": "agent_started",
+      "payload": {
+        "agent_name": "researcher",
+        "input": "Gather 2-3 key facts about the current state of agent observability."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000005",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-tool-search",
+      "parent_span_id": "sp-res",
+      "timestamp": "2026-09-08T09:00:02.400Z",
+      "type": "tool_called",
+      "payload": {
+        "tool_name": "search",
+        "status": "success",
+        "args": { "query": "agent observability 2026" },
+        "result": {
+          "hits": [
+            "OTel GenAI conventions cover agent spans",
+            "Waterfall views struggle with delegation"
+          ]
+        },
+        "duration_ms": 640
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000006",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-tool-read",
+      "parent_span_id": "sp-res",
+      "timestamp": "2026-09-08T09:00:03.300Z",
+      "type": "tool_called",
+      "payload": {
+        "tool_name": "read_page",
+        "status": "success",
+        "args": { "url": "https://example.com/agent-observability" },
+        "result": { "excerpt": "Most enterprises cite inadequate tooling as the main barrier." },
+        "duration_ms": 850
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000007",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-llm-res",
+      "parent_span_id": "sp-res",
+      "timestamp": "2026-09-08T09:00:05.100Z",
+      "type": "llm_called",
+      "payload": {
+        "model": "fake-model",
+        "provider": "fake",
+        "input_tokens": 2380,
+        "output_tokens": 412,
+        "duration_ms": 1730,
+        "prompt": "Condense these findings into 3 key facts: [search results and page excerpt]",
+        "response": "1. OTel GenAI conventions now cover agent spans. 2. Waterfall trace views struggle with multi-agent delegation. 3. Inadequate tooling is the most-cited barrier to production agent monitoring."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000008",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-res",
+      "parent_span_id": "sp-orch",
+      "timestamp": "2026-09-08T09:00:05.200Z",
+      "type": "agent_finished",
+      "payload": {
+        "status": "success",
+        "output": "Three key facts gathered on agent observability."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000009",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-orch",
+      "parent_span_id": null,
+      "timestamp": "2026-09-08T09:00:05.250Z",
+      "type": "delegated",
+      "payload": {
+        "child_agent_name": "writer",
+        "task": "Write a 3-sentence summary from the researcher's key facts."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000010",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-wri",
+      "parent_span_id": "sp-orch",
+      "timestamp": "2026-09-08T09:00:05.300Z",
+      "type": "agent_started",
+      "payload": {
+        "agent_name": "writer",
+        "input": "Write a 3-sentence summary from the researcher's key facts."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000011",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-llm-wri",
+      "parent_span_id": "sp-wri",
+      "timestamp": "2026-09-08T09:00:07.600Z",
+      "type": "llm_called",
+      "payload": {
+        "model": "fake-model",
+        "provider": "fake",
+        "input_tokens": 1954,
+        "output_tokens": 587,
+        "duration_ms": 2260,
+        "prompt": "Write a 3-sentence summary from: [three key facts]",
+        "response": "Agent observability is maturing fast, with OpenTelemetry's GenAI conventions now covering agent spans. Traditional waterfall trace views struggle to express multi-agent delegation. Tooling gaps remain the most-cited barrier to monitoring agents in production."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000012",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-wri",
+      "parent_span_id": "sp-orch",
+      "timestamp": "2026-09-08T09:00:07.700Z",
+      "type": "agent_finished",
+      "payload": {
+        "status": "success",
+        "output": "Summary written."
+      }
+    },
+    {
+      "event_id": "00000000-0000-4000-8000-000000000013",
+      "session_id": "11111111-1111-4111-8111-111111111111",
+      "span_id": "sp-orch",
+      "parent_span_id": null,
+      "timestamp": "2026-09-08T09:00:07.800Z",
+      "type": "agent_finished",
+      "payload": {
+        "status": "success",
+        "output": "Task complete: research gathered and summary written."
+      }
+    }
+  ]
+}

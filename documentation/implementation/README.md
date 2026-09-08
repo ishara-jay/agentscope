@@ -4,15 +4,15 @@ One doc per functional-requirement group. Each explains **what was built, how it
 
 ## Status
 
-| Doc             | Covers                                             | Status                             |
-| --------------- | -------------------------------------------------- | ---------------------------------- |
-| FR-1-capture    | Emitter helper: spans, batching, fire-and-forget   | ⏳ not started                     |
-| FR-2-ingest     | `POST /events`: validation, partial accept, dedupe | ⏳ not started                     |
-| FR-3-graph      | Reconstruction, rollups, cost, read API            | ⏳ not started                     |
-| FR-4-ui         | Session list, DAG view, detail panel, live polling | ⏳ not started                     |
-| FR-5-demo       | Demo agents, `LlmClient` port, fake/Gemini         | ⏳ not started                     |
-| NFR-scaffolding | Monorepo, shared config, CI, one-command boot      | 🔨 in progress (E0 steps 1–2 done) |
-| NFR-contract    | The shared schema package + fixture                | ⏳ next (E0 step 3)                |
+| Doc                             | Covers                                             | Status                             |
+| ------------------------------- | -------------------------------------------------- | ---------------------------------- |
+| FR-1-capture                    | Emitter helper: spans, batching, fire-and-forget   | ⏳ not started                     |
+| FR-2-ingest                     | `POST /events`: validation, partial accept, dedupe | ⏳ not started                     |
+| FR-3-graph                      | Reconstruction, rollups, cost, read API            | ⏳ not started                     |
+| FR-4-ui                         | Session list, DAG view, detail panel, live polling | ⏳ not started                     |
+| FR-5-demo                       | Demo agents, `LlmClient` port, fake/Gemini         | ⏳ not started                     |
+| NFR-scaffolding                 | Monorepo, shared config, CI, one-command boot      | 🔨 in progress (E0 steps 1–3 done) |
+| [NFR-contract](NFR-contract.md) | The shared schema package + fixture                | ✅ done (E0 step 3)                |
 
 **Legend:** ⏳ not started · 🔨 in progress · ✅ done · Status flips when the epic's PRs merge.
 

@@ -6,7 +6,7 @@
 
 - FR-1.1 A TypeScript emitter helper exposes functions to record: `agent_started`, `llm_called`, `tool_called`, `delegated`, `agent_finished`.
 - FR-1.2 Every event carries: `session_id`, `span_id`, `parent_span_id` (nullable for root), timestamp, and event-specific payload (model, prompt, response, token counts, tool name, tool args/result, latency).
-- FR-1.3 Field naming follows OTel GenAI semantic conventions where an equivalent exists (e.g. `gen_ai.request.model`, `gen_ai.usage.input_tokens`).
+- FR-1.3 Field naming is **mapped to** OTel GenAI semantic conventions where an equivalent exists — plain snake_case keys (`model`, `input_tokens`) with the mapping table kept in the contract package (`packages/contract/src/events.ts`); the literal dotted attribute names (`gen_ai.request.model`) arrive only with OTLP ingestion (v1.2), translated at the edge. _(Amended at contract freeze, 2026-09-08 — dotted keys are hostile to TS ergonomics; see design 02 §2.)_
 - FR-1.4 The emitter POSTs events to the ingest API; emission failures must not crash or block the agent run (fire-and-forget with local warning).
 
 ### FR-2 Ingest & storage

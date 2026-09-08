@@ -265,3 +265,17 @@ The contract package's Vitest test parses every fixture event with `TraceEvent` 
 3. Accept §3/§4 response shapes (Dev B: is `SessionGraph` renderable as-is? nodes/edges/events enough for React Flow + panels?).
 4. Write the full `fixture.json` together against §6.
 5. Merge step 3's PR; from then on, schema changes = both devs + fixture, same commit.
+
+---
+
+## As-built (step 3, 2026-09-08) — deltas from the drafts above
+
+The contract is implemented in `packages/contract`. Differences from this document's drafts:
+
+- **`latency_ms` → `duration_ms`** everywhere (events and `GraphNode`) — tools do work, not just wait; decided at freeze.
+- **FR-1.3 naming refinement adopted** — plain snake_case + mapping comments; FR-1.3's wording amended in the same commit.
+- **Zod 4 idioms**: `z.uuid()` and `z.iso.datetime()` (the `z.string().uuid()` forms in the drafts are Zod-3 style).
+- **Added schemas the drafts implied but didn't spell out**: `IngestResponse` (§3's response shape), `SessionList` (`GET /sessions` wrapper), and `ModelPrice`/`PriceTable` (`prices.ts` — the DD-8 price file is a contract too).
+- **Batch bounds 1–100 ratified as contract** (DD-11).
+- The fixture is 13 events / 8 spans; exported as the package subpath `@agentscope/contract/fixture.json`.
+- Toolchain note: TypeScript 6 needs an explicit `"types": ["node"]` in the package tsconfig for `node:fs` in tests (auto-`@types` inclusion tightened).
