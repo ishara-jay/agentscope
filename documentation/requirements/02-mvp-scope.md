@@ -7,6 +7,7 @@ Budget: 6 dev-days, AI-assisted. The scope fits not by shaving every feature by 
 Accepting arbitrary OpenTelemetry spans means solving out-of-order arrival, orphaned spans, sessions that never close, and other frameworks' attribute conventions. That is the hard 20% and could alone consume the 3 days.
 
 Instead:
+
 - Define a small, **typed event schema**: `agent_started`, `llm_called`, `tool_called`, `delegated`, `agent_finished` — each carrying `session_id`, `span_id`, `parent_span_id`, token counts, latency.
 - Ship a **~100-line TypeScript emitter helper** used by the demo app.
 - Because we control the emitter, events arrive well-formed and graph reconstruction becomes a simple parent-pointer walk instead of a distributed-systems problem.
@@ -27,7 +28,7 @@ Severable (nothing depends on it), costs a day-plus. It becomes the loudest road
 
 ## The irreducible core (what survives)
 
-Everything kept serves one sentence: *run the demo agents, watch the DAG draw itself live, click a node, see the exact prompt/response/cost behind that decision.*
+Everything kept serves one sentence: _run the demo agents, watch the DAG draw itself live, click a node, see the exact prompt/response/cost behind that decision._
 
 1. **Demo app** — 3 agents (orchestrator → researcher + writer), 2–3 tools, google-genai SDK
 2. **Emitter helper** + thin NestJS ingest endpoint + Postgres event store

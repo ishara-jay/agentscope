@@ -32,8 +32,8 @@ Notes: `private: true` (the root is never published); `packageManager` pins pnpm
 
 ```yaml
 packages:
-  - "packages/*"
-  - "apps/*"
+  - 'packages/*'
+  - 'apps/*'
 ```
 
 ### `.gitignore`
@@ -93,25 +93,39 @@ Every package extends this and overrides only what it must (frontend: `module: E
 ### `eslint.config.js` (flat config)
 
 ```js
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
-import prettier from "eslint-config-prettier";
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import prettier from 'eslint-config-prettier';
 
 export default tseslint.config(
-  { ignores: ["**/dist/**", "**/coverage/**"] },
+  { ignores: ['**/dist/**', '**/coverage/**'] },
   js.configs.recommended,
-  ...tseslint.configs.recommended,
-  prettier, // MUST be last: turns off formatting rules so Prettier owns style
   {
+    files: ['**/*.ts', '**/*.tsx'],
+    extends: [...tseslint.configs.recommended],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
-      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
-      "@typescript-eslint/no-floating-promises": "error"
-    }
-  }
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-floating-promises': 'error',
+    },
+  },
+  prettier, // last: turns off formatting rules so Prettier owns style
 );
 ```
 
 Design rule (from the CI discussion): small rule set, **everything at error level** — a rule worth having is worth failing the build for.
+
+**As-built notes (step 2 implementation, 2026-09-08):**
+
+- `no-floating-promises` is a _type-aware_ rule → requires `projectService: true`, and type-aware linting is scoped to `**/*.ts(x)` only so JS config files don't need a tsconfig. (The original draft omitted this and would fail with "you must provide parserOptions.project".)
+- **TypeScript is pinned to the 6.x line**, not latest: typescript-eslint supports `<6.1.0`, while `pnpm add typescript` resolves to 7.x (the Go-native compiler line), which the lint toolchain can't consume yet. Revisit when typescript-eslint declares TS 7 support.
+- Root `package.json` carries `"type": "module"` (the eslint config is ESM).
+- A one-time `pnpm format` normalized all pre-existing docs so `format:check` starts green (planned gotcha #2).
 
 ### `.prettierrc`
 
@@ -122,6 +136,16 @@ Design rule (from the CI discussion): small rule set, **everything at error leve
   "printWidth": 100
 }
 ```
+
+### `.prettierignore`
+
+```
+pnpm-lock.yaml
+dist/
+coverage/
+```
+
+(Lockfile is machine-owned; build output is belt-and-braces with ESLint's ignores.)
 
 ### `.vscode/settings.json` (committed — makes enforcement a non-event locally)
 
@@ -172,7 +196,7 @@ services:
       POSTGRES_USER: agentscope
       POSTGRES_PASSWORD: agentscope
       POSTGRES_DB: agentscope
-    ports: ["5432:5432"]
+    ports: ['5432:5432']
     volumes: [pgdata:/var/lib/postgresql/data]
 volumes:
   pgdata:
@@ -181,21 +205,21 @@ volumes:
 ### `apps/backend/src/db/schema.ts` — the one table
 
 ```ts
-import { pgTable, uuid, text, timestamp, jsonb, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, jsonb, index } from 'drizzle-orm/pg-core';
 
 export const events = pgTable(
-  "events",
+  'events',
   {
-    eventId: uuid("event_id").primaryKey(),
-    sessionId: uuid("session_id").notNull(),
-    spanId: text("span_id").notNull(),
-    parentSpanId: text("parent_span_id"), // null = root span
-    type: text("type").notNull(),
-    timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
-    payload: jsonb("payload").notNull(),
-    receivedAt: timestamp("received_at", { withTimezone: true }).defaultNow().notNull()
+    eventId: uuid('event_id').primaryKey(),
+    sessionId: uuid('session_id').notNull(),
+    spanId: text('span_id').notNull(),
+    parentSpanId: text('parent_span_id'), // null = root span
+    type: text('type').notNull(),
+    timestamp: timestamp('timestamp', { withTimezone: true }).notNull(),
+    payload: jsonb('payload').notNull(),
+    receivedAt: timestamp('received_at', { withTimezone: true }).defaultNow().notNull(),
   },
-  (t) => [index("events_session_idx").on(t.sessionId, t.timestamp)]
+  (t) => [index('events_session_idx').on(t.sessionId, t.timestamp)],
 );
 ```
 
@@ -263,14 +287,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4          # reads version from packageManager field
+      - uses: pnpm/action-setup@v4 # reads version from packageManager field
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: pnpm }
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm format:check
       - run: pnpm typecheck
-      - run: pnpm test                       # includes contract's fixture-vs-schema check (DD-5)
+      - run: pnpm test # includes contract's fixture-vs-schema check (DD-5)
       - run: pnpm build
 ```
 
@@ -290,10 +314,10 @@ services:
       POSTGRES_USER: agentscope
       POSTGRES_PASSWORD: agentscope
       POSTGRES_DB: agentscope
-    ports: ["5432:5432"]
+    ports: ['5432:5432']
     volumes: [pgdata:/var/lib/postgresql/data]
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U agentscope"]
+      test: ['CMD-SHELL', 'pg_isready -U agentscope']
       interval: 2s
       retries: 15
 
@@ -306,13 +330,13 @@ services:
       PRICES_FILE: /app/config/prices.json
       PORT: 3001
     volumes:
-      - ./config/prices.json:/app/config/prices.json:ro   # bind mount: edit → live re-price (DD-8)
-    ports: ["3001:3001"]
+      - ./config/prices.json:/app/config/prices.json:ro # bind mount: edit → live re-price (DD-8)
+    ports: ['3001:3001']
 
   frontend:
     build: { context: ., dockerfile: apps/frontend/Dockerfile }
     depends_on: [backend]
-    ports: ["3000:80"]      # nginx serving the built SPA, /api proxied to backend
+    ports: ['3000:80'] # nginx serving the built SPA, /api proxied to backend
 
 volumes:
   pgdata:
@@ -324,7 +348,7 @@ Dockerfiles: standard two-stage pnpm builds (`corepack enable` → `pnpm install
 
 ```json
 {
-  "gemini-2.5-flash": { "input_per_mtok": 0.30, "output_per_mtok": 2.50 },
+  "gemini-2.5-flash": { "input_per_mtok": 0.3, "output_per_mtok": 2.5 },
   "fake-model": { "input_per_mtok": 0, "output_per_mtok": 0 }
 }
 ```

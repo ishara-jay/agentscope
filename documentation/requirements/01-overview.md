@@ -4,7 +4,7 @@
 
 A **flight recorder for multi-agent LLM systems**: it captures what happened inside an agent session and replays it as a visual conversation graph — which agent delegated to which, which tools were called, carrying what context, at what latency and cost.
 
-One-sentence pitch: *"Run your agents, watch the conversation graph draw itself live, click any node, and see the exact prompt behind that decision."*
+One-sentence pitch: _"Run your agents, watch the conversation graph draw itself live, click any node, and see the exact prompt behind that decision."_
 
 ## The problem
 
@@ -28,7 +28,7 @@ AgentScope v1 is a compact, readable reference implementation, not a hosted plat
 
 ## Demo story (the artifact that carries the project)
 
-A ~30-second GIF: run the demo agents on a task → open AgentScope → the conversation graph draws itself live (researcher fans out into tool calls, hands off to the writer, cost counter ticking per node) → click one node → see the exact prompt behind that decision. That single view of an agent DAG *is* the brand.
+A ~30-second GIF: run the demo agents on a task → open AgentScope → the conversation graph draws itself live (researcher fans out into tool calls, hands off to the writer, cost counter ticking per node) → click one node → see the exact prompt behind that decision. That single view of an agent DAG _is_ the brand.
 
 ## Tech direction (agreed)
 

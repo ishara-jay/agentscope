@@ -6,8 +6,8 @@ This is a portfolio project — **both developers must be able to explain every 
 
 ## The split: write path vs read path
 
-| | Dev A — **write path** | Dev B — **read path** |
-|---|---|---|
+|      | Dev A — **write path**                                                                            | Dev B — **read path**                                                                      |
+| ---- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Owns | Emitter helper → ingest API → Postgres schema; demo agent app (incl. `LlmClient` port, DD-6/DD-7) | Graph reconstruction + cost rollups → `GET /sessions`, `GET /sessions/:id/graph`; React UI |
 
 Both developers write NestJS, Postgres, and contract-adjacent code. Dev B owns the data shape they render — no handoff negotiation between "who makes the graph JSON" and "who draws it."
@@ -16,12 +16,12 @@ Both developers write NestJS, Postgres, and contract-adjacent code. Dev B owns t
 
 Work is organized into four epics. **Each epic owner breaks their epic into user stories on Day 1 morning** (after the contract freeze) — stories small enough to be a single PR each. E0 is jointly owned with tasks explicitly assigned to both developers.
 
-| Epic | Owner | Contents |
-|---|---|---|
-| **E0 — Scaffolding** | Joint (tasks split) | Mono-repo workspaces; shared contract package skeleton; docker-compose (Postgres); CI pipeline skeleton (lint, typecheck, test); shared tsconfig/lint config; `.env.example`. Suggested split — Dev A: workspaces, contract package, docker-compose; Dev B: CI workflow, lint/tsconfig, frontend app bootstrap |
-| **E1 — Write path** | Dev A | Emitter helper (FR-1); ingest endpoint + storage (FR-2); demo agents with `LlmClient` port + Gemini adapter (FR-5) |
-| **E2 — Read path** | Dev B | Graph reconstruction + rollups + sessions/graph endpoints (FR-3); session list, DAG view, node detail panel, live polling (FR-4) |
-| **E3 — Integration & ship** | Joint | One-command boot; end-to-end run on real data; README (architecture diagram, design-decisions distilled from [06](06-design-decisions.md)); demo GIF; CI green |
+| Epic                        | Owner               | Contents                                                                                                                                                                                                                                                                                                       |
+| --------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **E0 — Scaffolding**        | Joint (tasks split) | Mono-repo workspaces; shared contract package skeleton; docker-compose (Postgres); CI pipeline skeleton (lint, typecheck, test); shared tsconfig/lint config; `.env.example`. Suggested split — Dev A: workspaces, contract package, docker-compose; Dev B: CI workflow, lint/tsconfig, frontend app bootstrap |
+| **E1 — Write path**         | Dev A               | Emitter helper (FR-1); ingest endpoint + storage (FR-2); demo agents with `LlmClient` port + Gemini adapter (FR-5)                                                                                                                                                                                             |
+| **E2 — Read path**          | Dev B               | Graph reconstruction + rollups + sessions/graph endpoints (FR-3); session list, DAG view, node detail panel, live polling (FR-4)                                                                                                                                                                               |
+| **E3 — Integration & ship** | Joint               | One-command boot; end-to-end run on real data; README (architecture diagram, design-decisions distilled from [06](06-design-decisions.md)); demo GIF; CI green                                                                                                                                                 |
 
 ## Knowledge-sharing mechanisms (all three, non-negotiable)
 
@@ -33,13 +33,13 @@ Work is organized into four epics. **Each epic owner breaks their epic into user
 
 ## Day-by-day
 
-| | Dev A (write path) | Dev B (read path) |
-|---|---|---|
-| **Day 1 (am)** | **Joint:** contract freeze + `fixture.json` (hour one) → story breakdown per epic → E0 scaffolding tasks | |
-| **Day 1 (pm)** | Emitter helper; ingest endpoint; Postgres schema; events persisting from a test script | React Flow DAG rendering the fixture with latency/cost badges (layout timeboxed — see below) |
-| **Day 2** | Demo agents with real Gemini calls behind the `LlmClient` port; instrumented end-to-end | **Paired 90 min:** graph reconstruction core → solo: rollups, sessions + graph endpoints; wire UI from fixture to real API; node detail panel |
-| **Day 3 (am)** | `docker compose up` one-command boot; "run demo task" trigger (UI/CLI); integration on real data | Session list page; 2s polling / live-draw; visual polish on the graph (it's the brand); record the demo GIF |
-| **Day 3 (pm)** | **Joint (E3):** README + architecture diagram + design-decisions section, CI green, buffer — integration always finds something | |
+|                | Dev A (write path)                                                                                                              | Dev B (read path)                                                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Day 1 (am)** | **Joint:** contract freeze + `fixture.json` (hour one) → story breakdown per epic → E0 scaffolding tasks                        |                                                                                                                                               |
+| **Day 1 (pm)** | Emitter helper; ingest endpoint; Postgres schema; events persisting from a test script                                          | React Flow DAG rendering the fixture with latency/cost badges (layout timeboxed — see below)                                                  |
+| **Day 2**      | Demo agents with real Gemini calls behind the `LlmClient` port; instrumented end-to-end                                         | **Paired 90 min:** graph reconstruction core → solo: rollups, sessions + graph endpoints; wire UI from fixture to real API; node detail panel |
+| **Day 3 (am)** | `docker compose up` one-command boot; "run demo task" trigger (UI/CLI); integration on real data                                | Session list page; 2s polling / live-draw; visual polish on the graph (it's the brand); record the demo GIF                                   |
+| **Day 3 (pm)** | **Joint (E3):** README + architecture diagram + design-decisions section, CI green, buffer — integration always finds something |                                                                                                                                               |
 
 ## Deliverables
 

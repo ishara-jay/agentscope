@@ -10,7 +10,7 @@ Evolve AgentScope from a portfolio project into a **client-agnostic monitoring a
 
 - **The space is crowded at the platform level.** Langfuse (MIT, self-hostable leader), Arize Phoenix (source-available), Laminar (Apache 2.0, agents-first), Comet Opik, OpenObserve, plus closed platforms (LangSmith, Braintrust) and the giants bolting on LLM observability. Two developers do not out-platform that field.
 - **"Client-agnostic" has one meaning in practice: speaks OpenTelemetry.** The OTel GenAI semantic conventions cover agent runs, tool executions, and memory operations — but are **pre-stable** (no 1.0, names may change; moved to a dedicated fast-moving repo in June 2026). Inventing our own instrumentation standard is dead on arrival; riding the standard means accepting dialect churn.
-- **The named gaps are our slice.** Practitioners' recurring complaints about incumbents: very long traces (thousands of spans), non-deterministic control flow (trace shape changes every run), nested causality tracking. All three are symptoms of rendering agent sessions as *waterfall lists* — a visualization inherited from microservice tracing that collapses under improvised delegation.
+- **The named gaps are our slice.** Practitioners' recurring complaints about incumbents: very long traces (thousands of spans), non-deterministic control flow (trace shape changes every run), nested causality tracking. All three are symptoms of rendering agent sessions as _waterfall lists_ — a visualization inherited from microservice tracing that collapses under improvised delegation.
 
 ## The strategic frame: "Grafana of agent traces"
 
@@ -21,25 +21,26 @@ Not "compete with Langfuse." Grafana won by being the best **lens** over everyon
 This is a wedge two people can hold: visualization is the incumbents' secondary concern and our only one.
 
 **Why our architecture already fits this** (decided for local reasons, validated by the market read):
+
 - The anti-corruption layer (DD-4 discussion) quarantines dialect churn — pre-stable conventions hit one adapter, never the core.
 - The canonical internal model means the viewer never cares whose SDK produced the spans.
 - OTel-aligned field naming (design 02) makes convergence a mapping exercise.
 
 ## Sequenced path, with go/no-go gates
 
-| Stage | What ships | Gate to proceed |
-|---|---|---|
-| v1 (now) | MVP + launch write-up | External traction: stars, issues from strangers, anyone rendering their own traces |
-| v1.2 | OTLP ingest — "client-agnostic" becomes literally true | Same signals, from non-JS users specifically |
-| v1.3+ | Dialect adapters for 1–2 major frameworks (refuse the long tail) | Sustained external use; contributions |
-| v2 | Embeddable / standalone viewer over existing stores | Only with real adoption; this is the framework claim |
+| Stage    | What ships                                                       | Gate to proceed                                                                    |
+| -------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| v1 (now) | MVP + launch write-up                                            | External traction: stars, issues from strangers, anyone rendering their own traces |
+| v1.2     | OTLP ingest — "client-agnostic" becomes literally true           | Same signals, from non-JS users specifically                                       |
+| v1.3+    | Dialect adapters for 1–2 major frameworks (refuse the long tail) | Sustained external use; contributions                                              |
+| v2       | Embeddable / standalone viewer over existing stores              | Only with real adoption; this is the framework claim                               |
 
 **The gate rule:** progression is decided by external traction, never internal enthusiasm. Ship, publish, let the response allocate the next month.
 
 ## Standing decisions the vision implies
 
 - **License: MIT or Apache 2.0.** Adoption is the entire game; restrictive licensing (cf. Phoenix's Elastic license, held against it in comparisons) would kill the wedge.
-- **Depth over breadth, permanently.** Replay + diff + delegation semantics is a product; a graph render is a feature an incumbent can clone in a quarter. The moat, if any, is being *deep* on multi-agent sessions.
+- **Depth over breadth, permanently.** Replay + diff + delegation semantics is a product; a graph render is a feature an incumbent can clone in a quarter. The moat, if any, is being _deep_ on multi-agent sessions.
 - **Never own instrumentation.** OTel SDKs and existing instrumentation libraries are the capture layer (per DD-4); our emitter remains a v1 convenience, not a strategic asset.
 - **Viewer-first positioning caps monetization — accepted.** This is credibility-first. If a product emerges, it emerges from adoption, not from a business plan written today.
 
