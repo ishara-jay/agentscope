@@ -1,5 +1,7 @@
 # AgentScope — Documentation
 
+**Building this?** Start at [IMPLEMENTATION-PLAN.md](IMPLEMENTATION-PLAN.md) — the handoff: everything remaining, in order, one PR per row.
+
 | Section                                     | Contents                                                                                                                                |
 | ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | [requirements/](requirements/README.md)     | The sprint contract: overview, MVP scope, functional requirements, team plan, roadmap, design-decision log (DD-1…), monorepo build plan |
