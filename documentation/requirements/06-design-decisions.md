@@ -117,4 +117,70 @@ packages/contract  ← the ONE definition (Zod)
 
 ---
 
+## DD-9: pnpm workspaces for the monorepo
+
+**Decision:** The monorepo uses pnpm workspaces (via `corepack enable`). No build orchestrator (Turborepo/Nx) on top — plain recursive pnpm scripts.
+
+**Main reason — it makes our dependency rule physical:**
+- npm (and classic yarn) hoist all dependencies into one flat `node_modules`. Side effect: any package can import anything installed anywhere in the repo, declared or not — "phantom dependencies." They work on your machine until someone reshuffles packages, then break in ways nobody understands.
+- pnpm doesn't hoist: each package can only resolve what its own `package.json` declares. Our dependency-direction rule (`demo-agents → emitter → contract ← backend`, `frontend → contract`, arrows only downward, nothing depends on an app) stops being a diagram in [07-monorepo-plan.md](07-monorepo-plan.md) and becomes a build error when violated. For a two-person, 3-day build where cross-review is the only other guardrail, architecture enforcement for free from the package manager is a good trade.
+
+**Supporting reasons:**
+- Workspace ergonomics we already lean on: `pnpm --filter <pkg>` targeting (used in every E0 "done when" check) and `workspace:*` linking between internal packages with zero publishing ceremony.
+- Speed and disk: one global content-addressed store, hard-linked into projects — fast installs, efficient CI caching.
+- It's the current default for TS monorepos, so guides, templates, and AI-generated snippets mostly assume it — less friction on edge cases mid-sprint.
+
+**Honest costs:** one-time `corepack enable`; rarely, a tool that assumes a flat hoisted `node_modules` misbehaves under the symlink layout (Nest, Vite, Drizzle, and React Flow are all fine).
+
+**Alternatives:** npm workspaces — works, but hoists by default, losing the strictness that is the main point; acceptable fallback. Yarn Berry PnP — stricter still, but real ecosystem friction; more tool than five packages need.
+
+---
+
+## DD-10: PostgreSQL as the event store
+
+**Decision:** Events are stored in PostgreSQL — one append-only table: envelope fields as indexed columns, the per-type payload as one `jsonb` column. Access via Drizzle.
+
+**Main reason — the table is half relational, half document, and Postgres is excellent at both:**
+- The envelope needs classic SQL: an ordered index scan per session (`(session_id, timestamp)`), idempotent writes (`ON CONFLICT (event_id) DO NOTHING` for safe emitter retries), transactional batch inserts, and `GROUP BY` to derive the sessions list.
+- The payload needs document storage: five event types with different shapes in one column — which is exactly `jsonb` (validated binary JSON, queryable and indexable later without schema changes).
+- Most databases force a side; Postgres does both natively, which is why the single-table design (envelope → columns, payload → jsonb) maps so cleanly.
+
+**Supporting reasons:**
+- Covers the roadmap with no new infrastructure: analytics → materialized views; replacing 2s polling → `LISTEN/NOTIFY`; queue patterns → `SKIP LOCKED`. One database for the project's plausible life.
+- Maximum boringness per capability: one compose line, first-class Drizzle support, both devs know it.
+- Portfolio continuity: PostgreSQL is on the CV; the repo should corroborate its claims.
+
+**Alternatives:**
+- **SQLite** — tempting (zero containers), but multiple processes across a container boundary (backend container + host demo-agents) is its weak spot, JSON support is well short of `jsonb`, and demonstrating production shape (compose, migrations, a real DB) is part of the point.
+- **MongoDB** — would work, but adds nothing over `jsonb` while costing SQL aggregation ergonomics and Drizzle's type story; its real strengths (schema flexibility at scale, sharding) aren't in our problem.
+- **ClickHouse / Timescale** — what real observability backends use at volume; absurd operational weight for ~50-event sessions. The write path stays a portable event log; a columnar read store is a bolt-on if volume ever demands it.
+- **Kafka / event stores** — category error: transport, not a query store; you'd still need a database beside it to serve the graph API.
+
+**Storage rules (bind the implementation):**
+- Only Zod-validated events reach the table — the DB stores trusted data behind the contract boundary; it does not enforce shape itself.
+- Events are **re-parsed with `TraceEvent` on read** during reconstruction: rows from an older schema version or manual edits degrade gracefully (FR-3.6 posture) instead of crashing.
+- No `sessions` table — sessions are derived by aggregation (see [design 01, step 6](../design/01-scaffolding-drafts.md)); a materialized read model is the future optimization, never a change to the write path.
+
+**Honest costs:** a database container at all (vs SQLite's nothing); some jsonb row-size overhead. Both trivial at demo scale.
+
+---
+
+## DD-11: Emitter batching, and why the flush interval ignores the poll interval
+
+**Decision:** The emitter never sends one HTTP request per event. Events go into an in-memory queue, flushed as an `IngestBatch` (1–100 events) when the first of three triggers fires: queue reaches N events (~10), the oldest queued event is ~300ms old, or `session.flush()` at process exit. N and 300ms are tuning constants (implementation); the 1–100 batch range is contract.
+
+**Why batch (simple terms):**
+- Agent runs emit in bursts — a `delegated`, `agent_started`, and `llm_called` can land within milliseconds. Per-event requests pay connection overhead per event and multiply failure opportunities; a batch is one request and one insert transaction.
+- Batching is what makes three other design pieces make sense: the partial-rejection response (one bad event must not sink its batch-mates, FR-2.3), the `event_id` idempotency key (an ambiguous flush failure is retried whole — duplicates are counted, not stored, DD-10), and together those give at-least-once delivery with no bookkeeping.
+- Same pattern as OTel's batch span processor — the emitter stays conceptually aligned with what replaces it in v1.2.
+
+**Why flush at ~300ms when the UI polls at 2s — three independent reasons:**
+1. **Latencies add up.** UI staleness ≈ flush delay + poll delay. At 300ms the poll dominates (as it should) and the graph grows smoothly; a 2s flush means ~4s worst case and clumpy, jumping live-draw (plus aliasing when producer and consumer intervals are similar).
+2. **The buffer is an amnesia window.** Queued events die with a crash, and the events just before a crash are exactly what a flight recorder must not lose. 300ms caps the loss at a third of a second; 2s can lose the entire interesting part.
+3. **The emitter must not know about the frontend.** The 2s poll is a frontend detail scheduled to change (roadmap: push updates). When two constants live in different components, matching them is coupling, not consistency — each component tunes against its own constraints (network overhead vs freshness vs loss window; server load vs liveness).
+
+**Cost check:** the time trigger fires only when the queue is non-empty — a quiet emitter sends nothing; sustained worst case is ~3 small requests/second from one demo app.
+
+---
+
 *Scope-level decisions (Postgres-not-Kafka framing, polling-not-WebSockets, React Flow-not-hand-rolled layout, the two structural cuts) live in [02-mvp-scope.md](02-mvp-scope.md).*

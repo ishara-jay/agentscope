@@ -20,6 +20,7 @@ In simple terms: v1 already lets any client POST events and checks each one (sha
 - **Session search & filtering**, larger-graph virtualization
 - **Framework adapters** (LangGraph, etc.) — explicitly out of scope until OTel ingest exists
 - **Auth / multi-tenancy** — only if the hosted demo ever needs it
+- **Split ingest into its own service** — the write and read paths have fundamentally different profiles: ingest is bursty, write-heavy, and availability-critical (a dropped event is gone forever), while the read side is human-paced and tolerant (a down read API loses nothing). When those profiles actually diverge under real volume — and not one day before — ingest becomes its own deployable (N replicas behind a load balancer, single-writer discipline over the shared event log; a queue between ingest and the DB is the step after that). Real observability backends (Grafana Loki/Tempo/Mimir) split exactly this way: ingesters vs queriers. The v1 design keeps this split cheap on purpose: `ingest/` and `sessions/` are separate NestJS modules forbidden from importing each other, both sides share only `packages/contract` and the database, and the emitter targets ingest via one env var — so the split is a folder move plus a compose service, not a rewrite.
 
 ## Non-goals (for any version)
 - Competing with Langfuse/MLflow/Phoenix/Laminar on breadth
