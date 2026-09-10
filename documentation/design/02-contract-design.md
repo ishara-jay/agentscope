@@ -279,3 +279,12 @@ The contract is implemented in `packages/contract`. Differences from this docume
 - **Batch bounds 1–100 ratified as contract** (DD-11).
 - The fixture is 13 events / 8 spans; exported as the package subpath `@agentscope/contract/fixture.json`.
 - Toolchain note: TypeScript 6 needs an explicit `"types": ["node"]` in the package tsconfig for `node:fs` in tests (auto-`@types` inclusion tightened).
+
+## As-built (step 4, 2026-09-08) — emitter skeleton, deltas from §5
+
+`packages/emitter` exports the §5 API (`startSession` → `Session.agent` → `AgentSpan.llmCall` / `toolCall` / `delegate`, plus `Session.flush`) as **B1 stubs**: every wrapper runs its callback and returns the result untouched; each hole is marked `// B1:` in `session.ts`. Notes:
+
+- **Contract-typed signatures.** `llmCall`'s meta is `Pick<LlmCalled['payload'], 'model' | 'provider'>` (`LlmCallMeta`) and `agent`'s options are `Pick<AgentStarted['payload'], 'input'>` (`AgentOptions`) — derived from the contract as DD-5 wants, so call sites can't drift from the wire schema. The package depends on `@agentscope/contract` for types only; it has zero runtime imports.
+- **`LlmCallResultLike` is the seam to `LlmClient`.** `llmCall<T extends LlmCallResultLike>` accepts anything carrying `usage: { inputTokens, outputTokens }`, shaped to match `LlmResult` above, so the emitter reads token usage off the wrapped call's result without depending on the demo app. A `@ts-expect-error` test pins the constraint.
+- **Open design check (settle in E1, before the demo app is written against it):** the wrapper sees `usage`, but `llm_called` also requires `prompt` and `response` strings, and `agent_finished` has an optional `output` — none observable from the callback's return value alone. Likely resolution: `LlmCallMeta` gains `prompt`, `LlmCallResultLike` gains `text?` (also matching `LlmResult`), and `output` is taken from the agent callback's result when it is a string. Deliberately not done in B1.
+- **Toolchain note:** a package that depends on another workspace package typechecks against the dependency's `dist/` (its `exports` map points there), so `pnpm build` must run before `pnpm typecheck` on a fresh clone — verified: with `packages/contract/dist` absent, the emitter's typecheck fails with TS2307. The gate order in [dev-guide/git-workflow.md](../dev-guide/git-workflow.md) is build → lint → format:check → typecheck → test; step 9's CI should match (01's draft runs `typecheck` before `build`).
