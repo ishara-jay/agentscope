@@ -4,5 +4,5 @@
     "outDir": "dist",
     "rootDir": "src"
   },
-  "exclude": ["src/**/*.test.ts", "vitest.config.ts"]
+  "exclude": ["src/**/*.test.ts", "drizzle.config.ts", "vitest.config.ts"]
 }

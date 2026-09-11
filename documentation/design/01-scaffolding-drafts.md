@@ -177,7 +177,8 @@ apps/backend/
     ├── pricing/price.service.ts        # reads PRICES_FILE per request (DD-8)
     └── db/
         ├── schema.ts       # Drizzle table defs (step 6)
-        └── client.ts       # pg pool from DATABASE_URL
+        ├── database.client.ts # Nest lifecycle + pg pool from DATABASE_URL
+        └── database.module.ts # exports DatabaseClient to feature modules
 ```
 
 `ingest/` and `sessions/` are separate Nest modules with no imports of each other — the write/read path ownership boundary is visible in the folder tree.
@@ -203,10 +204,17 @@ services:
       POSTGRES_USER: agentscope
       POSTGRES_PASSWORD: agentscope
       POSTGRES_DB: agentscope
-    ports: ['5432:5432']
-    volumes: [pgdata:/var/lib/postgresql/data]
+    ports:
+      - '5434:5432'
+    volumes:
+      - pgdata-agentscope:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U agentscope -d agentscope']
+      interval: 2s
+      timeout: 5s
+      retries: 15
 volumes:
-  pgdata:
+  pgdata-agentscope:
 ```
 
 ### `apps/backend/src/db/schema.ts` — the one table
@@ -235,6 +243,19 @@ export const events = pgTable(
 `event_id` as primary key gives idempotent ingest for free: replayed events conflict on PK and are skipped (`ON CONFLICT DO NOTHING`).
 
 **Storage mapping (DD-10):** the contract's envelope/payload split maps one-to-one onto columns/jsonb — envelope fields become real columns because they're what we query, index, and group by; the per-type payload stays one opaque `jsonb` column because SQL never looks inside it in v1. Write path: Zod-validate → split → insert (only trusted data reaches the table). Read path: reassemble `{...columns, payload}` and **re-parse with `TraceEvent`** before reconstruction, so stale or hand-edited rows degrade gracefully (FR-3.6) instead of crashing.
+
+**As-built notes (step 6 implementation, 2026-09-11):**
+
+- Host processes use `postgres://agentscope:agentscope@localhost:5434/agentscope`; future Compose services use the same credentials at `postgres:5432`. The project-scoped `pgdata-agentscope` volume uses PostgreSQL 17's standard `/var/lib/postgresql/data` path and deliberately has no global Compose volume name.
+- `DatabaseClient` requires `DATABASE_URL`, owns the `pg.Pool`, exposes the schema-typed Drizzle client, verifies the connection with `SELECT 1` during Nest module initialization, and closes the pool during module destruction. Nest shutdown hooks make process signals run that lifecycle cleanup. Feature modules consume the exported client; Drizzle types do not cross into HTTP or shared packages.
+- The committed Drizzle migration creates only the append-only `events` table and its `(session_id, timestamp)` index. There are no sessions/metrics tables, database enums, span foreign keys, seed data, ingest queries, or speculative OTel columns.
+
+### Future telemetry boundary (recorded, not implemented in step 6)
+
+- Client integrations ultimately emit OpenTelemetry GenAI spans and metrics. An OpenTelemetry Collector receives telemetry once and fans it out; AgentScope later accepts OTLP and normalizes relevant spans into its internal event model.
+- Honeycomb receives traces and metrics through an OTLP exporter. Grafana uses native GenAI metrics through Prometheus/Mimir, derived latency/call-rate/error metrics from a span-metrics connector, and Tempo for traces when desired.
+- AgentScope neither implements PromQL nor acts as a metrics database. PostgreSQL is optimized for session reconstruction and event inspection, while Prometheus-compatible storage owns client-agent metrics and PromQL.
+- High-cardinality session IDs, span IDs, prompts, and responses remain trace attributes rather than Prometheus labels. Resource attributes and native OTel trace identifiers wait for the later OTLP contract and migration, when their precise shape is settled.
 
 ---
 
