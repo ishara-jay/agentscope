@@ -182,6 +182,13 @@ apps/backend/
 
 `ingest/` and `sessions/` are separate Nest modules with no imports of each other — the write/read path ownership boundary is visible in the folder tree.
 
+**As-built notes (step 5 implementation, 2026-09-10):**
+
+- The bootstrap contains only `main.ts`, `AppModule`, and `HealthController`; Drizzle, database connections, ingest/session routes, pricing, and their placeholder directories remain deferred to their owning steps.
+- The backend stays ESM/NodeNext like the rest of the workspace. Nest's decorator flags live in the backend `tsconfig.json`, while `tsconfig.build.json` emits `src` to `dist` and excludes tests.
+- Vitest compiles Nest decorators through `unplugin-swc`/SWC; pnpm's workspace policy allows only `@swc/core` to run its native install script. The HTTP test uses Nest's testing module and Supertest to assert the exact `GET /health` response, then closes the test application.
+- Runtime startup uses the standard Nest Express adapter, reads optional `PORT`, and defaults to `3001`.
+
 ---
 
 ## Step 6 — Postgres + Drizzle (Dev A)

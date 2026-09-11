@@ -11,7 +11,7 @@ One doc per functional-requirement group. Each explains **what was built, how it
 | FR-3-graph                      | Reconstruction, rollups, cost, read API            | ⏳ not started                     |
 | FR-4-ui                         | Session list, DAG view, detail panel, live polling | ⏳ not started                     |
 | FR-5-demo                       | Demo agents, `LlmClient` port, fake/Gemini         | ⏳ not started                     |
-| NFR-scaffolding                 | Monorepo, shared config, CI, one-command boot      | 🔨 in progress (E0 steps 1–4 done) |
+| NFR-scaffolding                 | Monorepo, shared config, CI, one-command boot      | 🔨 in progress (E0 steps 1–5 done) |
 | [NFR-contract](NFR-contract.md) | The shared schema package + fixture                | ✅ done (E0 step 3)                |
 
 **Legend:** ⏳ not started · 🔨 in progress · ✅ done · Status flips when the epic's PRs merge.
