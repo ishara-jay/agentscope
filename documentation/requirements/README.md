@@ -1,18 +1,38 @@
-# AgentScope — Requirements
+# Requirements
 
-This folder captures the agreed project definition before any code is written.
+This is the product contract. Each top-level requirement has one document with
+its detailed statements, acceptance evidence, status, and links to relevant
+architecture. Requirement IDs remain stable even if files are renamed.
 
-| Doc                                                            | Contents                                                                                                                                             |
-| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [01-overview.md](01-overview.md)                               | Problem statement, core thesis, positioning                                                                                                          |
-| [02-mvp-scope.md](02-mvp-scope.md)                             | 3-day MVP scope: what's in, what's cut, definition of done                                                                                           |
-| [03-functional-requirements.md](03-functional-requirements.md) | Functional & non-functional requirements for the MVP                                                                                                 |
-| [04-team-plan.md](04-team-plan.md)                             | Write-path/read-path split, epics for user-story breakdown, pairing + cross-review, day-by-day plan                                                  |
-| [05-roadmap.md](05-roadmap.md)                                 | Deliberately deferred features and the reasoning                                                                                                     |
-| [06-design-decisions.md](06-design-decisions.md)               | Architecture decisions with alternatives considered (NestJS, JSON/protobuf, emitter, contract, LLM provider, cost model, pnpm, PostgreSQL, batching) |
-| [07-monorepo-plan.md](07-monorepo-plan.md)                     | E0 scaffolding: tooling choices, target structure, 10 build steps (one PR each) with owners and done-when checks                                     |
+## Functional requirements
 
-Long-range strategy lives outside the sprint contract: [../VISION.md](../VISION.md).
+| ID   | Requirement                                          | Status      |
+| ---- | ---------------------------------------------------- | ----------- |
+| FR-1 | [Trace capture](FR-1-trace-capture.md)               | In progress |
+| FR-2 | [Ingest and storage](FR-2-ingest-storage.md)         | Planned     |
+| FR-3 | [Graph reconstruction](FR-3-graph-reconstruction.md) | Planned     |
+| FR-4 | [Web interface](FR-4-web-interface.md)               | Planned     |
+| FR-5 | [Demo application](FR-5-demo-application.md)         | In progress |
 
-Status: **draft** — pending event-schema and API design (next step).
-Repo intent: mono-repo (backend, frontend, demo-agents, docs as workspaces). Scaffolding not yet created; remote origin to be added.
+## Non-functional requirements
+
+| ID    | Requirement                                               | Status        |
+| ----- | --------------------------------------------------------- | ------------- |
+| NFR-1 | [One-command boot](NFR-1-one-command-boot.md)             | In progress   |
+| NFR-2 | [Contract-first development](NFR-2-contract-first.md)     | In progress   |
+| NFR-3 | [Readability over generality](NFR-3-readability.md)       | Active policy |
+| NFR-4 | [MVP graph performance](NFR-4-graph-performance.md)       | Planned       |
+| NFR-5 | [Secret handling](NFR-5-secret-handling.md)               | Planned       |
+| NFR-6 | [Continuous integration](NFR-6-continuous-integration.md) | Planned       |
+
+Status means `Planned`, `In progress`, `Complete`, or `Active policy`. A
+requirement is complete only when its acceptance evidence is present in the
+repository.
+
+## Editing requirements
+
+Start new requirements from [`_template.md`](_template.md). Change the smallest
+possible file. If the change also reverses or introduces a cross-cutting design
+choice, add a decision to the
+[architecture decision log](../architecture/decisions.md); otherwise do not
+touch the architecture section.

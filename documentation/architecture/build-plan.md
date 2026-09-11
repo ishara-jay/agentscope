@@ -1,6 +1,6 @@
-# 07 — Monorepo Build Plan (E0 scaffolding, step by step)
+# Monorepo build plan (E0 scaffolding, step by step)
 
-How we build the repo skeleton, one small step at a time. **Each step is one PR**: it has an owner, a "done when" check, and leaves `main` green. The steps map 1:1 onto E0 user stories ([04-team-plan.md](04-team-plan.md)).
+How we build the repo skeleton, one small step at a time. **Each step is one PR**: it has an owner, a "done when" check, and leaves `main` green. The steps map 1:1 onto E0 user stories in the [delivery plan](delivery-plan.md).
 
 ## Tooling decisions (made here, once)
 

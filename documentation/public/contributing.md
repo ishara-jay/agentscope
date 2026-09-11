@@ -1,6 +1,8 @@
-# Runbook — Git Workflow
+# Contributing and Git workflow
 
-How a change travels to `main`: branch → PR → cross-review → merge. One step or user story = one branch = one PR = one owner ([team plan](../requirements/04-team-plan.md), [E0 working rules](../requirements/07-monorepo-plan.md#working-rules-for-e0)).
+How a change travels to `main`: branch → PR → cross-review → merge. One step or
+user story = one branch = one PR = one owner ([delivery plan](../architecture/delivery-plan.md),
+[E0 working rules](../architecture/build-plan.md#working-rules-for-e0)).
 
 ```
 main ────●──────────────────────────────────────●──▶   (always green)
@@ -56,15 +58,21 @@ git push -u origin <branch>
 gh pr create --base main              # prompts for title and body; --fill takes them from the commit
 ```
 
-A good PR body has three parts: **what & why** (one paragraph; link the step, story, or FR), **see it work** (the commands the reviewer runs — same idea as the [implementation docs](../implementation/README.md)), and **review asks** (the one or two decisions you want a second opinion on). Same-PR obligations:
+A good PR body has three parts: **what & why** (one paragraph; link the step,
+story, or FR), **see it work** (the commands the reviewer runs and the matching
+[acceptance evidence](../requirements/README.md)), and **review asks** (the one
+or two decisions you want a second opinion on). Same-PR obligations:
 
-- Behaviour changed → the matching implementation doc is updated in the same PR.
-- Contract (`packages/contract`) changed → both devs agree **and** `fixture.json` changes in the same commit ([DD-5](../requirements/06-design-decisions.md)).
+- Behaviour changed → the matching requirement and public developer doc are
+  updated in the same PR when their truth changed.
+- Contract (`packages/contract`) changed → both devs agree **and** `fixture.json`
+  changes in the same commit ([DD-5](../architecture/decisions.md)).
 - Toolchain or version changed → follow [version-upgrades.md](version-upgrades.md).
 
 ## 5. Cross-review and merge
 
-Every PR is reviewed by the other developer before merge — 100%, no exceptions ([team plan](../requirements/04-team-plan.md)).
+Every PR is reviewed by the other developer before merge — 100%, no exceptions
+([delivery plan](../architecture/delivery-plan.md)).
 
 - **Reviewer:** pull the branch, run "see it work", read every line; approve or request changes the same day.
 - **Author:** address comments with new commits, not by rewriting reviewed history.
@@ -86,5 +94,8 @@ A merged PR is undone with `git revert <its squash commit>` on a new branch, thr
 ## Rules that apply to every change
 
 - **One owner, one reviewer, one PR per step or story** — small enough to review in minutes.
-- **`main` is always green:** the gates pass locally before the PR opens, and CI (E0 step 9) is the second gate.
-- **Docs travel with code:** implementation docs, design as-built notes, and these runbooks are updated in the PR that makes them stale.
+- **`main` is always green:** the gates pass locally before the PR opens. CI is
+  tracked by [NFR-6](../requirements/NFR-6-continuous-integration.md); until it
+  lands, local verification and cross-review are the gates.
+- **Docs travel with code:** affected requirements and public docs are updated in
+  the PR that makes them stale. Architecture changes only when direction changes.
