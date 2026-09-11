@@ -1,5 +1,8 @@
 export function parseTask(args: string[]): string | undefined {
-  const task = args.filter((arg, index) => !(index === 0 && arg === '--')).join(' ').trim();
+  const task = args
+    .filter((arg, index) => !(index === 0 && arg === '--'))
+    .join(' ')
+    .trim();
   return task || undefined;
 }
 
