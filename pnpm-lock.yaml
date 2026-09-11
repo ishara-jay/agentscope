@@ -86,6 +86,10 @@ importers:
         version: 5.0.0(@types/node@26.4.1)(vite@8.2.2(@types/node@26.4.1)(esbuild@0.28.2)(tsx@4.23.13))
 
   apps/demo-agents:
+    dependencies:
+      '@agentscope/emitter':
+        specifier: workspace:*
+        version: link:../../packages/emitter
     devDependencies:
       '@types/node':
         specifier: ^26.0.0
