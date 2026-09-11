@@ -21,6 +21,9 @@
     "start": "node dist/main.js",
     "dev": "tsx src/main.ts"
   },
+  "dependencies": {
+    "@agentscope/emitter": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^26.0.0",
     "tsx": "^4.20.0",
