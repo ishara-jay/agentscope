@@ -3,6 +3,10 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "paths": {
+      "@agentscope/contract": ["./packages/contract/src/index.ts"],
+      "@agentscope/emitter": ["./packages/emitter/src/index.ts"]
+    },
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": true,

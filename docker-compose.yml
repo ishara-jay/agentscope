@@ -15,5 +15,16 @@ services:
       timeout: 5s
       retries: 15
 
+  demo-agents:
+    build:
+      context: .
+      dockerfile: apps/demo-agents/Dockerfile
+    environment:
+      LLM_PROVIDER: fake
+      AGENTSCOPE_ENDPOINT: http://backend:3001
+      DEMO_AGENT_PORT: 3002
+    ports:
+      - '3002:3002'
+
 volumes:
   pgdata-agentscope:

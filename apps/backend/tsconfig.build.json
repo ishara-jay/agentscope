@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "paths": {}
   },
   "exclude": ["src/**/*.test.ts", "drizzle.config.ts", "vitest.config.ts"]
 }
