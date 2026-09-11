@@ -1,4 +1,4 @@
-# 02 — MVP Scope (2 developers × 3 days)
+# MVP scope (2 developers × 3 days)
 
 Budget: 6 dev-days, AI-assisted. The scope fits not by shaving every feature by 40%, but by **cutting the two hardest problems entirely** and keeping the one demo that carries the project.
 
