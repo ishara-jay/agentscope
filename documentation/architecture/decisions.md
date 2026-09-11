@@ -1,6 +1,12 @@
-# 06 — Design Decisions
+# Architecture decision log
 
-Decisions made before implementation, with the alternatives considered and the conditions under which each should be revisited. The Day-3 README's design-decisions section is distilled from this file.
+Accepted cross-cutting decisions, the alternatives considered, and the
+conditions under which each should be revisited. Unless an entry says otherwise,
+its status is **Accepted**.
+
+New decisions receive the next `DD-n` identifier. If direction changes, add the
+replacement entry and mark the old one `Superseded by DD-n`; do not rewrite the
+original rationale. This keeps decision-only edits small and preserves history.
 
 ---
 
@@ -132,7 +138,7 @@ packages/contract  ← the ONE definition (Zod)
 **Main reason — it makes our dependency rule physical:**
 
 - npm (and classic yarn) hoist all dependencies into one flat `node_modules`. Side effect: any package can import anything installed anywhere in the repo, declared or not — "phantom dependencies." They work on your machine until someone reshuffles packages, then break in ways nobody understands.
-- pnpm doesn't hoist: each package can only resolve what its own `package.json` declares. Our dependency-direction rule (`demo-agents → emitter → contract ← backend`, `frontend → contract`, arrows only downward, nothing depends on an app) stops being a diagram in [07-monorepo-plan.md](07-monorepo-plan.md) and becomes a build error when violated. For a two-person, 3-day build where cross-review is the only other guardrail, architecture enforcement for free from the package manager is a good trade.
+- pnpm doesn't hoist: each package can only resolve what its own `package.json` declares. Our dependency-direction rule (`demo-agents → emitter → contract ← backend`, `frontend → contract`, arrows only downward, nothing depends on an app) stops being a diagram in the [monorepo build plan](build-plan.md) and becomes a build error when violated. For a two-person, 3-day build where cross-review is the only other guardrail, architecture enforcement for free from the package manager is a good trade.
 
 **Supporting reasons:**
 
@@ -173,7 +179,9 @@ packages/contract  ← the ONE definition (Zod)
 
 - Only Zod-validated events reach the table — the DB stores trusted data behind the contract boundary; it does not enforce shape itself.
 - Events are **re-parsed with `TraceEvent` on read** during reconstruction: rows from an older schema version or manual edits degrade gracefully (FR-3.6 posture) instead of crashing.
-- No `sessions` table — sessions are derived by aggregation (see [design 01, step 6](../design/01-scaffolding-drafts.md)); a materialized read model is the future optimization, never a change to the write path.
+- No `sessions` table — sessions are derived by aggregation (see
+  [scaffolding design, step 6](design/scaffolding.md)); a materialized read model
+  is the future optimization, never a change to the write path.
 
 **Honest costs:** a database container at all (vs SQLite's nothing); some jsonb row-size overhead. Both trivial at demo scale.
 
@@ -199,4 +207,4 @@ packages/contract  ← the ONE definition (Zod)
 
 ---
 
-_Scope-level decisions (Postgres-not-Kafka framing, polling-not-WebSockets, React Flow-not-hand-rolled layout, the two structural cuts) live in [02-mvp-scope.md](02-mvp-scope.md)._
+_Scope-level decisions (Postgres-not-Kafka framing, polling-not-WebSockets, React Flow-not-hand-rolled layout, the two structural cuts) live in [MVP scope](mvp-scope.md)._

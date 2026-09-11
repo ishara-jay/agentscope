@@ -1,4 +1,4 @@
-# Runbook — Version Upgrades
+# Version upgrade runbook
 
 Simple step-by-step guides for upgrading the toolchain and dependencies. One upgrade = one PR, reviewed like any other change. If a step fails, stop and use the rollback at the end of that section.
 
@@ -39,15 +39,17 @@ The floor is set in `package.json` → `"engines"` and CI's `node-version`. Upgr
 **Steps:**
 
 1. Install the new Node locally (nvm, brew, or installer) and switch to it: `node -v`.
-2. Update **both** places in the repo:
+2. Update the repository version declarations:
    - `package.json` → `"engines": { "node": ">=<major>" }`
-   - `.github/workflows/ci.yml` → `node-version: <major>`
+   - once CI exists, `.github/workflows/ci.yml` → `node-version: <major>`
 3. Verify locally:
    ```bash
    pnpm install && pnpm lint && pnpm typecheck && pnpm test && pnpm build
    ```
 4. If backend/frontend Dockerfiles pin a Node base image, bump those tags in the same PR.
-5. Open the PR; CI running on the new version is the real verification.
+5. Open the PR. Until [NFR-6](../requirements/NFR-6-continuous-integration.md)
+   lands, attach the local gate output; afterwards CI on the new version is the
+   final verification.
 
 **Rollback:** revert the commit and switch your local Node back.
 
@@ -87,6 +89,8 @@ The lockfile (`pnpm-lock.yaml`) is the source of truth — it is always committe
 ## Rules that apply to every upgrade
 
 - **One upgrade, one PR, one owner** — same as any other change; cross-review applies.
-- **CI is the gate:** if `--frozen-lockfile` fails in CI, the lockfile and `package.json` disagree — run `pnpm install` locally and commit the lockfile.
+- **Frozen installs are the gate:** if `--frozen-lockfile` fails locally or in
+  future CI, the lockfile and `package.json` disagree — run `pnpm install`
+  locally and commit the lockfile.
 - **Never upgrade during the last hours before a demo.** Upgrades are day-start work with a full verification window.
 - Version floors (`engines`, `packageManager`) live in the repo, not in anyone's head — if you upgraded something and it isn't in a file, it didn't happen.

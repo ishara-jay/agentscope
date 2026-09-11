@@ -1,6 +1,10 @@
-# Design 01 — Scaffolding Drafts (E0 steps 1–2, 5–10)
+# Scaffolding design (E0 steps 1–2, 5–10)
 
-Draft contents for every scaffolding file, ready to be applied step by step per [07-monorepo-plan.md](../requirements/07-monorepo-plan.md). These are **design drafts** — exact versions get pinned at implementation time (`pnpm add` resolves latest stable; drafts show intent, not lockfile truth). The contract package (steps 3–4) has its own design: [02-contract-design.md](02-contract-design.md).
+Draft contents for every scaffolding file, ready to be applied step by step per
+the [monorepo build plan](../build-plan.md). These are **design drafts** — exact
+versions get pinned at implementation time (`pnpm add` resolves latest stable;
+drafts show intent, not lockfile truth). The contract package (steps 3–4) has
+its own [trace contract design](trace-contract.md).
 
 ---
 
