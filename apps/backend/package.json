@@ -5,6 +5,9 @@
   "type": "module",
   "scripts": {
     "build": "nest build",
+    "db:check": "drizzle-kit check",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "start": "node dist/main.js",
@@ -16,6 +19,8 @@
     "@nestjs/common": "^12.0.1",
     "@nestjs/core": "^12.0.1",
     "@nestjs/platform-express": "^12.0.1",
+    "drizzle-orm": "^0.45.2",
+    "pg": "^8.23.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
@@ -24,7 +29,9 @@
     "@nestjs/testing": "^12.0.1",
     "@swc/core": "^1.16.2",
     "@types/node": "^26.4.1",
+    "@types/pg": "^8.23.1",
     "@types/supertest": "^7.2.1",
+    "drizzle-kit": "^0.31.10",
     "supertest": "^7.2.2",
     "unplugin-swc": "^1.6.0",
     "vitest": "^5.0.0"
