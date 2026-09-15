@@ -1,4 +1,4 @@
-# 04 — Team Plan (2 developers, 3 days)
+# Delivery plan (2 developers, 3 days)
 
 ## Guiding decision: shared understanding is a deliverable
 
@@ -21,7 +21,7 @@ Work is organized into four epics. **Each epic owner breaks their epic into user
 | **E0 — Scaffolding**        | Joint (tasks split) | Mono-repo workspaces; shared contract package skeleton; docker-compose (Postgres); CI pipeline skeleton (lint, typecheck, test); shared tsconfig/lint config; `.env.example`. Suggested split — Dev A: workspaces, contract package, docker-compose; Dev B: CI workflow, lint/tsconfig, frontend app bootstrap |
 | **E1 — Write path**         | Dev A               | Emitter helper (FR-1); ingest endpoint + storage (FR-2); demo agents with `LlmClient` port + Gemini adapter (FR-5)                                                                                                                                                                                             |
 | **E2 — Read path**          | Dev B               | Graph reconstruction + rollups + sessions/graph endpoints (FR-3); session list, DAG view, node detail panel, live polling (FR-4)                                                                                                                                                                               |
-| **E3 — Integration & ship** | Joint               | One-command boot; end-to-end run on real data; README (architecture diagram, design-decisions distilled from [06](06-design-decisions.md)); demo GIF; CI green                                                                                                                                                 |
+| **E3 — Integration & ship** | Joint               | One-command boot; end-to-end run on real data; README (architecture diagram, design decisions distilled from the [decision log](decisions.md)); demo GIF; CI green                                                                                                                                             |
 
 ## Knowledge-sharing mechanisms (all three, non-negotiable)
 
@@ -43,7 +43,7 @@ Work is organized into four epics. **Each epic owner breaks their epic into user
 
 ## Deliverables
 
-Definition of done stays the five checks in [02-mvp-scope.md](02-mvp-scope.md). Mapped to epics:
+Definition of done stays the five checks in [MVP scope](mvp-scope.md). Mapped to epics:
 
 1. One-command boot (E0 + E3)
 2. Runnable demo task with real LLM calls (E1)
@@ -56,7 +56,7 @@ Definition of done stays the five checks in [02-mvp-scope.md](02-mvp-scope.md). 
 - **React Flow dynamic layout** (Dev B, Day 1 pm): max half a day. Fallback: simple left-to-right tree layout — demos nearly as well at ~6 nodes.
 - **Dev B's NestJS ramp** (if backend is newer ground for them): the Day-2 pairing session doubles as the on-ramp; if the graph endpoints slip, the node detail panel moves to Day 3 am and polish shrinks.
 - **Demo agent flakiness** (LLM nondeterminism): pin a low temperature and a task with a stable delegation shape; canned replay from stored events is the emergency demo fallback.
-- **Day 3 pm is buffer by design.** If unused, spend it on stretch goals in this order: Anthropic `LlmClient` adapter ([05-roadmap.md](05-roadmap.md)), then Azure deploy — never the reverse of buffer-first.
+- **Day 3 pm is buffer by design.** If unused, spend it on stretch goals in this order: Anthropic `LlmClient` adapter ([roadmap](roadmap.md)), then Azure deploy — never the reverse of buffer-first.
 
 ## Working agreements
 

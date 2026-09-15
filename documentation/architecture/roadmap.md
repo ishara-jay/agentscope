@@ -1,4 +1,4 @@
-# 05 — Roadmap (deliberately deferred)
+# Roadmap (deliberately deferred)
 
 Everything here was consciously cut from the 3-day MVP. Naming the hard problems we deferred — and why — is part of the project's design-decisions story.
 
