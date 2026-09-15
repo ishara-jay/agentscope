@@ -1,0 +1,10 @@
+{
+  "gemini-2.5-flash": {
+    "input_per_mtok": 0.3,
+    "output_per_mtok": 2.5
+  },
+  "fake-model": {
+    "input_per_mtok": 0,
+    "output_per_mtok": 0
+  }
+}

@@ -1,15 +1,14 @@
 # Getting started
 
-AgentScope is under active development. Today you can validate the shared
-contract, run the deterministic multi-agent example, start PostgreSQL, and run
-the backend health service. Ingest, graph APIs, and the browser UI are not yet
-available.
+AgentScope is under active development. The repository includes a production
+Compose shape for PostgreSQL, the backend health service, and the browser UI.
+The deterministic multi-agent example remains available through the CLI.
 
 ## Prerequisites
 
 - Node.js 24 or newer
 - pnpm 11 (the exact version is pinned in `package.json`)
-- Docker with Compose for PostgreSQL
+- Docker with Compose
 
 ## Install and verify
 
@@ -27,23 +26,22 @@ pnpm test
 `pnpm build` comes before `pnpm typecheck` because workspace packages consume
 generated declarations from dependency `dist/` directories on a clean clone.
 
-## Start the database and backend
+## Start the application stack
 
 ```bash
-docker compose up -d postgres
-DATABASE_URL=postgres://agentscope:agentscope@localhost:5434/agentscope \
-  pnpm --filter @agentscope/backend db:migrate
-DATABASE_URL=postgres://agentscope:agentscope@localhost:5434/agentscope \
-  pnpm --filter @agentscope/backend start:dev
+cp .env.example .env
+docker compose up --build
 ```
 
-Open `http://localhost:3001/health`. A healthy service returns:
+The frontend is available at `http://localhost:3000` and the backend health
+endpoint is available at `http://localhost:3001/health`. A healthy service
+returns:
 
 ```json
 { "status": "ok" }
 ```
 
-Stop PostgreSQL without deleting its named volume:
+Stop the stack without deleting its named volume:
 
 ```bash
 docker compose down
