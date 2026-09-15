@@ -12,7 +12,7 @@
 ## Acceptance evidence
 
 - [x] A committed workflow runs the same gate command documented for local use.
-- [ ] Repository branch protection requires the CI check before merging.
+- [x] Repository branch protection requires the CI check before merging.
 - [ ] Reconstruction and cost-rollup tests include normal and degraded inputs.
 
 ## Related architecture
