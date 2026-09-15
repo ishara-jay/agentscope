@@ -1,7 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@agentscope/emitter": ["../../packages/emitter/src/index.ts"]
+    }
   },
   "include": ["src", "vitest.config.ts"]
 }
