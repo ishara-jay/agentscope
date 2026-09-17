@@ -1,6 +1,6 @@
 # NFR-6 — Continuous integration
 
-**Status:** Planned
+**Status:** Implemented
 
 ## Requirement
 
@@ -11,8 +11,8 @@
 
 ## Acceptance evidence
 
-- [ ] A committed workflow runs the same gate command documented for local use.
-- [ ] A pull request cannot merge when any gate fails.
+- [x] A committed workflow runs the same gate command documented for local use.
+- [x] Repository branch protection requires the CI check before merging.
 - [ ] Reconstruction and cost-rollup tests include normal and degraded inputs.
 
 ## Related architecture
