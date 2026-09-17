@@ -22,7 +22,7 @@
 
 - [x] The public wrapper API exists in `packages/emitter` and preserves callback
       results and errors.
-- [ ] Wrapper tests prove all five event types have correct span relationships.
+- [x] Wrapper tests prove all five event types have correct span relationships.
 - [ ] Batching tests prove events are posted to the configured endpoint.
 - [ ] Transport-failure tests prove agent work still completes.
 

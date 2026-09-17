@@ -18,6 +18,7 @@ not track every implementation edit.
 - [Delivery plan](delivery-plan.md) — ownership and timeboxes for the original MVP sprint.
 - [Monorepo build plan](build-plan.md) — the staged E0 scaffolding plan.
 - [E1/E2 feature build plan](e1-e2-build-plan.md) — the parallel write/read-path PR sequence and integration gates.
+- [E1.1 implementation plan](e1-1-build-plan.md) — the file-level plan for event-producing emitter wrappers.
 - [Scaffolding design](design/scaffolding.md) — implementation drafts for workspace infrastructure.
 - [Trace contract design](design/trace-contract.md) — events, spans, APIs, fixture, and emitter design.
 

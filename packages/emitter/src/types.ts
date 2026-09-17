@@ -26,8 +26,8 @@ export interface EmitterOptions {
 /** What the agent was asked to do — the `agent_started` payload minus the name. */
 export type AgentOptions = Pick<AgentStarted['payload'], 'input'>;
 
-/** Which model answered — the `llm_called` fields the wrapper can't observe itself. */
-export type LlmCallMeta = Pick<LlmCalled['payload'], 'model' | 'provider'>;
+/** Request metadata needed for the `llm_called` event. */
+export type LlmCallMeta = Pick<LlmCalled['payload'], 'model' | 'provider' | 'prompt'>;
 
 /**
  * The deliberate seam between the emitter and the demo app's `LlmClient`
@@ -35,6 +35,8 @@ export type LlmCallMeta = Pick<LlmCalled['payload'], 'model' | 'provider'>;
  * usage off whatever the wrapped call returns, without depending on the app.
  */
 export interface LlmCallResultLike {
+  text?: string;
+  toolCalls?: readonly { id: string; name: string; args: unknown }[];
   usage: { inputTokens: number; outputTokens: number };
 }
 
@@ -48,9 +50,9 @@ export interface Session {
 
 /** The context handed to an agent's callback: how the agent records what it does. */
 export interface AgentSpan {
-  /** Time `fn`, read usage off its result, emit `llm_called`. Returns the result untouched. */
+  /** Emit `llm_called` when `fn` succeeds. A rejection is rethrown unchanged. */
   llmCall<T extends LlmCallResultLike>(meta: LlmCallMeta, fn: () => Promise<T>): Promise<T>;
-  /** Time `fn`, emit `tool_called` with `args` and the result or error. Returns the result untouched. */
+  /** Emit `tool_called` on success or error and preserve the callback's result or thrown value. */
   toolCall<T>(name: string, args: unknown, fn: () => Promise<T>): Promise<T>;
   /** Emit `delegated` on this span, then run `fn` as the child agent span. */
   delegate<T>(childName: string, task: string, fn: (child: AgentSpan) => Promise<T>): Promise<T>;
