@@ -15,5 +15,40 @@ services:
       timeout: 5s
       retries: 15
 
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://agentscope:agentscope@postgres:5432/agentscope
+      PRICES_FILE: /app/config/prices.json
+      PORT: 3001
+    volumes:
+      - ./config/prices.json:/app/config/prices.json:ro
+    ports:
+      - '3001:3001'
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://localhost:3001/health').then(r => { if (!r.ok) process.exit(1); })
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - '3000:80'
+
 volumes:
   pgdata-agentscope:
