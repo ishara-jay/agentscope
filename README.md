@@ -1,5 +1,7 @@
 # AgentScope
 
+[![CI](https://github.com/ishara-jay/agentscope/actions/workflows/ci.yml/badge.svg)](https://github.com/ishara-jay/agentscope/actions/workflows/ci.yml)
+
 AgentScope is a flight recorder for multi-agent LLM systems. It captures a run
 as typed trace events and turns those events into a conversation graph so a
 developer can see delegation, tool use, prompts, responses, latency, tokens,
