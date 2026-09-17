@@ -50,8 +50,9 @@ export const LlmCalled = Envelope.extend({
     input_tokens: z.number().int().nonnegative(), // ↔ gen_ai.usage.input_tokens
     output_tokens: z.number().int().nonnegative(), // ↔ gen_ai.usage.output_tokens
     duration_ms: z.number().nonnegative(),
-    /** Capped at 16 KB by the emitter (truncated with a "…[truncated]" marker). */
+    /** Preserved in full so the detail view can show the exact prompt (FR-4.4). */
     prompt: z.string(),
+    /** Preserved in full so the detail view can show the exact response (FR-4.4). */
     response: z.string(),
   }),
 });
@@ -61,7 +62,7 @@ export const ToolCalled = Envelope.extend({
   payload: z.object({
     tool_name: z.string().min(1), // ↔ gen_ai.tool.name
     status: z.enum(['success', 'error']),
-    /** JSON-serializable; capped like prompt. */
+    /** JSON-serializable tool input, preserved without field-level truncation. */
     args: z.unknown(),
     result: z.unknown(),
     duration_ms: z.number().nonnegative(),

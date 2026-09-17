@@ -16,6 +16,9 @@ Both developers write NestJS, Postgres, and contract-adjacent code. Dev B owns t
 
 Work is organized into four epics. **Each epic owner breaks their epic into user stories on Day 1 morning** (after the contract freeze) — stories small enough to be a single PR each. E0 is jointly owned with tasks explicitly assigned to both developers.
 
+The implementation-ready PR sequence for the two feature tracks is maintained
+in the [E1/E2 feature build plan](e1-e2-build-plan.md).
+
 | Epic                        | Owner               | Contents                                                                                                                                                                                                                                                                                                       |
 | --------------------------- | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **E0 — Scaffolding**        | Joint (tasks split) | Mono-repo workspaces; shared contract package skeleton; docker-compose (Postgres); CI pipeline skeleton (lint, typecheck, test); shared tsconfig/lint config; `.env.example`. Suggested split — Dev A: workspaces, contract package, docker-compose; Dev B: CI workflow, lint/tsconfig, frontend app bootstrap |
