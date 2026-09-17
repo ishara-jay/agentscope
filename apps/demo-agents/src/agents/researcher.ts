@@ -7,11 +7,19 @@ import type {
   ToolCall,
   ToolImplementation,
 } from '../llm/client.js';
+import { serializeLlmRequest } from '../llm/serialization.js';
 
 export type ToolSet = ReadonlyMap<string, ToolImplementation>;
 
 const callLlm = (span: AgentSpan, client: LlmClient, request: LlmRequest): Promise<LlmResult> =>
-  span.llmCall({ model: request.model, provider: client.provider }, () => client.generate(request));
+  span.llmCall(
+    {
+      model: request.model,
+      provider: client.provider,
+      prompt: serializeLlmRequest(request),
+    },
+    () => client.generate(request),
+  );
 
 const executeTool = async (
   span: AgentSpan,
@@ -37,7 +45,7 @@ export async function runResearcher(
     },
     { role: 'user', content: task },
   ];
-  const request = {
+  const request: LlmRequest = {
     model: 'fake-model',
     messages,
     tools: [...tools.values()].map((tool) => tool.definition),
